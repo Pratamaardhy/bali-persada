@@ -1,0 +1,380 @@
+/* ==========================================================================
+   Bali Persada Tour and Travel - Design Tokens & Global CSS
+   Aesthetic: Tropical Premium, Clean, Minimalist Modern
+   ========================================================================== */
+
+:root {
+  /* Brand Color Palette */
+  --color-ocean: #123B50;
+  --color-ocean-dark: #0C2735;
+  --color-ocean-light: #1C4E68;
+  --color-ocean-subtle: #EBF2F6;
+
+  --color-teal: #2F8F83;
+  --color-teal-dark: #236E65;
+  --color-teal-light: #3EB3A4;
+  --color-teal-surface: #EAF5F4;
+
+  --color-sand: #F5F0E8;
+  --color-sand-light: #FAF7F2;
+  --color-sand-border: #E8E0D5;
+
+  --color-white: #FFFFFF;
+  --color-text-dark: #24323A;
+  --color-text-secondary: #6B7780;
+  --color-text-muted: #8E9AA1;
+  --color-border: #E6E9E8;
+  --color-border-hover: #CBD5D1;
+
+  --color-wa: #25D366;
+  --color-wa-hover: #1EBE5D;
+  --color-wa-surface: #E8F8EE;
+
+  --color-amber: #D97706;
+  --color-amber-bg: #FEF3C7;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-20: 5rem;    /* 80px */
+  --space-24: 6rem;    /* 96px */
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows (Soft & Modern) */
+  --shadow-sm: 0 1px 3px rgba(18, 59, 80, 0.05);
+  --shadow-md: 0 4px 14px rgba(18, 59, 80, 0.08);
+  --shadow-lg: 0 10px 28px rgba(18, 59, 80, 0.10);
+  --shadow-hover: 0 14px 34px rgba(18, 59, 80, 0.14);
+
+  /* Containers */
+  --container-max: 1220px;
+  --container-padding: 1.25rem;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-dark);
+  background-color: var(--color-sand-light);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-ocean);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw + 1rem, 3.25rem);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: clamp(1.15rem, 1.5vw + 0.25rem, 1.5rem);
+}
+
+h4 {
+  font-size: 1.125rem;
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all var(--transition-fast);
+}
+
+/* Focus styles for keyboard accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 3px;
+}
+
+/* Container Utility */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --container-padding: 2rem;
+  }
+}
+
+/* Section Spacing */
+.section {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+
+.section--sand {
+  background-color: var(--color-sand);
+}
+
+.section--white {
+  background-color: var(--color-white);
+}
+
+.section--ocean {
+  background-color: var(--color-ocean);
+  color: var(--color-white);
+}
+
+.section--ocean h2,
+.section--ocean h3,
+.section--ocean p {
+  color: var(--color-white);
+}
+
+/* UI Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  line-height: 1;
+}
+
+.badge--teal {
+  background-color: var(--color-teal-surface);
+  color: var(--color-teal-dark);
+}
+
+.badge--ocean {
+  background-color: var(--color-ocean-subtle);
+  color: var(--color-ocean);
+}
+
+.badge--amber {
+  background-color: var(--color-amber-bg);
+  color: var(--color-amber);
+}
+
+.badge--sand {
+  background-color: var(--color-sand);
+  color: var(--color-text-dark);
+}
+
+/* Button Component Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.35rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background-color: var(--color-teal);
+  color: var(--color-white);
+  box-shadow: 0 2px 6px rgba(47, 143, 131, 0.25);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-teal-dark);
+  box-shadow: 0 4px 12px rgba(47, 143, 131, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn--secondary {
+  background-color: var(--color-ocean);
+  color: var(--color-white);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-ocean-light);
+  transform: translateY(-1px);
+}
+
+.btn--outline {
+  background-color: transparent;
+  color: var(--color-ocean);
+  border: 1.5px solid var(--color-ocean);
+}
+
+.btn--outline:hover {
+  background-color: var(--color-ocean);
+  color: var(--color-white);
+}
+
+.btn--whatsapp {
+  background-color: var(--color-wa);
+  color: #0b4620;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
+}
+
+.btn--whatsapp:hover {
+  background-color: var(--color-wa-hover);
+  color: #053315;
+  box-shadow: 0 5px 16px rgba(37, 211, 102, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn--sm {
+  padding: 0.5rem 0.95rem;
+  font-size: 0.875rem;
+}
+
+.btn--lg {
+  padding: 0.95rem 1.85rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius-md);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* Form Styles */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: var(--space-4);
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-text-dark);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(47, 143, 131, 0.15);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+/* Card Common Elements */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
