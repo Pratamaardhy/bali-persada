@@ -24,14 +24,28 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
     .empty-state {
+      width: 100%;
       text-align: center;
-      padding: var(--space-12) var(--space-6);
+      padding: var(--space-8) var(--space-4);
       background-color: var(--color-white);
       border: 1px dashed var(--color-border);
       border-radius: var(--radius-lg);
       max-width: 520px;
-      margin: var(--space-8) auto;
+      margin: var(--space-6) auto;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .empty-state {
+        padding: var(--space-12) var(--space-6);
+        margin: var(--space-8) auto;
+      }
     }
     .empty-icon {
       color: var(--color-teal);
@@ -39,21 +53,29 @@ import { CommonModule } from '@angular/common';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 72px;
-      height: 72px;
+      width: 64px;
+      height: 64px;
       border-radius: var(--radius-full);
       background-color: var(--color-teal-surface);
     }
+    @media (min-width: 640px) {
+      .empty-icon {
+        width: 72px;
+        height: 72px;
+      }
+    }
     .empty-title {
-      font-size: 1.25rem;
+      font-size: clamp(1.125rem, 1.5vw + 0.5rem, 1.25rem);
       margin-bottom: var(--space-2);
       color: var(--color-ocean);
+      overflow-wrap: break-word;
     }
     .empty-desc {
       font-size: 0.9375rem;
       color: var(--color-text-secondary);
       margin-bottom: var(--space-6);
-      line-height: 1.5;
+      line-height: 1.55;
+      overflow-wrap: break-word;
     }
   `],
 })

@@ -44,7 +44,7 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
         <p class="card-desc">{{ hotel.shortDescription[lang()] }}</p>
 
         <div class="facilities-tags">
-          @for (fac of hotel.facilities[lang()].slice(0, 3); track fac) {
+          @for (fac of hotel.facilities[lang()].slice(0, 3); track $index) {
             <span class="facility-pill">{{ fac }}</span>
           }
         </div>
@@ -78,7 +78,13 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     </article>
   `,
   styles: [`
+    :host {
+      display: block;
+      min-width: 0;
+    }
     .hotel-card {
+      width: 100%;
+      min-width: 0;
       background-color: var(--color-white);
       border-radius: var(--radius-md);
       overflow: hidden;
@@ -113,6 +119,7 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       position: absolute;
       top: 0.75rem;
       left: 0.75rem;
+      max-width: calc(100% - 1.5rem);
       background-color: rgba(18, 59, 80, 0.9);
       backdrop-filter: blur(4px);
       color: var(--color-white);
@@ -125,6 +132,7 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       position: absolute;
       bottom: 0.75rem;
       right: 0.75rem;
+      max-width: calc(100% - 1.5rem);
       background-color: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(4px);
       color: var(--color-teal-dark);
@@ -134,10 +142,16 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       font-weight: 700;
     }
     .card-body {
-      padding: 1.25rem;
+      padding: 1.15rem;
       display: flex;
       flex-direction: column;
       flex: 1;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .card-body {
+        padding: 1.25rem;
+      }
     }
     .card-category {
       color: var(--color-teal);
@@ -159,12 +173,21 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       color: var(--color-teal);
     }
     .card-location {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.35rem;
       color: var(--color-text-secondary);
       font-size: 0.8125rem;
       margin-bottom: 0.65rem;
+      min-width: 0;
+    }
+    .card-location svg {
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .card-location span {
+      min-width: 0;
+      overflow-wrap: break-word;
     }
     .card-desc {
       font-size: 0.875rem;
@@ -227,13 +250,15 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     }
     .card-actions {
       display: grid;
-      grid-template-columns: 1fr 1.15fr;
+      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
       gap: 0.5rem;
     }
     .btn-detail {
+      width: 100%;
       font-size: 0.8125rem;
     }
     .btn-wa {
+      width: 100%;
       font-size: 0.8125rem;
       padding-left: 0.6rem;
       padding-right: 0.6rem;

@@ -82,11 +82,22 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
     </div>
   `,
   styles: [`
+    .hotels-page,
+    .page-header,
+    .catalog-section {
+      width: 100%;
+      max-width: 100%;
+    }
     .page-header {
       background: linear-gradient(180deg, #123B50 0%, #1C4E68 100%);
       color: var(--color-white);
-      padding: var(--space-12) 0 var(--space-10);
+      padding: var(--space-8) 0 var(--space-8);
       text-align: center;
+    }
+    @media (min-width: 768px) {
+      .page-header {
+        padding: var(--space-12) 0 var(--space-10);
+      }
     }
     .header-inner {
       max-width: 720px;
@@ -95,29 +106,38 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
       margin-bottom: var(--space-3);
     }
     .page-title {
-      font-size: clamp(2rem, 3.5vw + 0.5rem, 2.75rem);
+      font-size: clamp(1.65rem, 3.5vw + 0.5rem, 2.75rem);
       color: var(--color-white);
       margin-bottom: var(--space-3);
     }
     .page-subtitle {
-      font-size: 1.0625rem;
+      font-size: clamp(0.95rem, 1.2vw + 0.4rem, 1.0625rem);
       color: rgba(255, 255, 255, 0.85);
       line-height: 1.6;
     }
     .catalog-section {
-      padding-top: var(--space-8);
+      padding-top: var(--space-6);
       min-height: 60vh;
+    }
+    @media (min-width: 768px) {
+      .catalog-section {
+        padding-top: var(--space-8);
+      }
     }
     .filter-bar {
       display: flex;
+      width: 100%;
+      max-width: 100%;
       gap: 0.5rem;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       padding-bottom: 0.75rem;
       margin-bottom: 1.25rem;
       scrollbar-width: thin;
     }
     .filter-chip {
-      padding: 0.55rem 1.15rem;
+      flex-shrink: 0;
+      padding: 0.55rem 1.1rem;
       border-radius: var(--radius-full);
       background-color: var(--color-white);
       color: var(--color-ocean);
@@ -141,31 +161,44 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
+      min-width: 0;
     }
     @media (min-width: 768px) {
       .catalog-meta {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 2rem;
       }
     }
     .results-count {
       font-size: 0.9375rem;
       color: var(--color-text-secondary);
+      min-width: 0;
     }
     .results-count strong {
       color: var(--color-ocean);
     }
     .indicative-pill {
       display: inline-flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.4rem;
+      max-width: 100%;
       font-size: 0.8125rem;
       color: var(--color-teal-dark);
       background-color: var(--color-teal-surface);
-      padding: 0.35rem 0.75rem;
+      padding: 0.4rem 0.75rem;
       border-radius: var(--radius-sm);
+      line-height: 1.4;
+    }
+    .indicative-pill svg {
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .indicative-pill span {
+      min-width: 0;
+      overflow-wrap: break-word;
     }
   `],
 })

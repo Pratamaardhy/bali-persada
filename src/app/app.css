@@ -2,12 +2,16 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .skip-link {
-  position: absolute;
-  top: -100px;
+  position: fixed;
+  top: -120px;
   left: 1rem;
+  max-width: calc(100vw - 2rem);
   background-color: var(--color-ocean);
   color: var(--color-white);
   padding: 0.75rem 1.25rem;
@@ -25,4 +29,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }

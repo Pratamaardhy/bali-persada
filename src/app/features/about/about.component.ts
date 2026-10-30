@@ -99,11 +99,21 @@ import { SectionHeadingComponent } from '../../shared/components/section-heading
     </div>
   `,
   styles: [`
+    .about-page,
+    .page-header {
+      width: 100%;
+      max-width: 100%;
+    }
     .page-header {
       background: linear-gradient(180deg, #123B50 0%, #1C4E68 100%);
       color: var(--color-white);
-      padding: var(--space-12) 0 var(--space-10);
+      padding: var(--space-8) 0 var(--space-8);
       text-align: center;
+    }
+    @media (min-width: 768px) {
+      .page-header {
+        padding: var(--space-12) 0 var(--space-10);
+      }
     }
     .header-inner {
       max-width: 720px;
@@ -112,76 +122,88 @@ import { SectionHeadingComponent } from '../../shared/components/section-heading
       margin-bottom: var(--space-3);
     }
     .page-title {
-      font-size: clamp(2rem, 3.5vw + 0.5rem, 2.75rem);
+      font-size: clamp(1.65rem, 3.5vw + 0.5rem, 2.75rem);
       color: var(--color-white);
       margin-bottom: var(--space-3);
     }
     .page-subtitle {
-      font-size: 1.0625rem;
+      font-size: clamp(0.95rem, 1.2vw + 0.4rem, 1.0625rem);
       color: rgba(255, 255, 255, 0.85);
       line-height: 1.6;
     }
     .philosophy-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 3rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
       align-items: center;
+    }
+    .philosophy-text,
+    .philosophy-visual {
+      min-width: 0;
     }
     @media (min-width: 960px) {
       .philosophy-grid {
-        grid-template-columns: 1.1fr 0.9fr;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 3rem;
       }
     }
     .subheading {
-      font-size: 1.85rem;
+      font-size: clamp(1.45rem, 2.2vw + 0.4rem, 1.85rem);
       color: var(--color-ocean);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
     }
     .body-lead {
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 1.1vw + 0.4rem, 1.1rem);
       color: var(--color-text-dark);
       line-height: 1.7;
       margin-bottom: 1rem;
     }
     .body-secondary {
-      font-size: 1rem;
+      font-size: 0.975rem;
       color: var(--color-text-secondary);
       line-height: 1.65;
     }
     .about-img {
       width: 100%;
-      height: 380px;
+      height: clamp(240px, 50vw, 380px);
       object-fit: cover;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-md);
     }
     .values-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.75rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
     }
     @media (min-width: 768px) {
       .values-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.75rem;
       }
     }
     .value-card {
+      min-width: 0;
       background-color: var(--color-white);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      padding: 2rem 1.75rem;
+      padding: 1.5rem 1.25rem;
       display: flex;
       flex-direction: column;
     }
+    @media (min-width: 640px) {
+      .value-card {
+        padding: 2rem 1.75rem;
+      }
+    }
     .val-num {
       font-family: var(--font-heading);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--color-teal);
-      margin-bottom: 1rem;
+      margin-bottom: 0.85rem;
     }
     .val-title {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--color-ocean);
       margin-bottom: 0.65rem;
     }
@@ -194,38 +216,57 @@ import { SectionHeadingComponent } from '../../shared/components/section-heading
       max-width: 780px;
     }
     .info-box {
+      width: 100%;
+      min-width: 0;
       background-color: var(--color-sand-light);
       border: 1px solid var(--color-sand-border);
       border-radius: var(--radius-lg);
-      padding: 2.5rem;
+      padding: 1.5rem 1.25rem;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+    @media (min-width: 640px) {
+      .info-box {
+        padding: 2.5rem;
+      }
+    }
     .info-title {
-      font-size: 1.5rem;
+      font-size: clamp(1.3rem, 2vw + 0.4rem, 1.5rem);
       color: var(--color-ocean);
       margin-bottom: 0.75rem;
     }
     .info-desc {
-      font-size: 1rem;
+      font-size: 0.975rem;
       color: var(--color-text-secondary);
       line-height: 1.6;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.35rem;
       max-width: 600px;
     }
     .info-contact {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
+      justify-content: center;
+      gap: 0.35rem 0.5rem;
+      max-width: 100%;
+      margin-bottom: 1.75rem;
       font-size: 0.9375rem;
       color: var(--color-ocean);
     }
     .info-val {
       font-weight: 700;
       color: var(--color-teal-dark);
+      overflow-wrap: anywhere;
+    }
+    .info-box .btn {
+      width: 100%;
+    }
+    @media (min-width: 480px) {
+      .info-box .btn {
+        width: auto;
+      }
     }
     .mb-3 {
       margin-bottom: 0.75rem;

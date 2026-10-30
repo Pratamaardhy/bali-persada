@@ -5,7 +5,7 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./features/home/home.component').then((m) => m.HomeComponent),
-    title: 'Bali Persada Tour and Travel | Hotel & Paket Liburan Bali',
+    title: 'Bali Persada Tour and Travel | Paket Tour Bali & Pilihan Hotel',
   },
   {
     path: 'packages',
@@ -13,7 +13,7 @@ export const routes: Routes = [
       import('./features/packages/pages/packages-list/packages-list.component').then(
         (m) => m.PackagesListComponent
       ),
-    title: 'Paket Liburan Bali | Bali Persada Tour and Travel',
+    title: 'Paket Tour Bali Lengkap | Bali Persada Tour and Travel',
   },
   {
     path: 'packages/:slug',
@@ -21,7 +21,16 @@ export const routes: Routes = [
       import('./features/packages/pages/package-detail/package-detail.component').then(
         (m) => m.PackageDetailComponent
       ),
-    title: 'Detail Paket Liburan | Bali Persada Tour and Travel',
+    title: 'Detail Paket Tour Bali | Bali Persada Tour and Travel',
+  },
+  {
+    path: 'paket-tour',
+    redirectTo: 'packages',
+    pathMatch: 'full',
+  },
+  {
+    path: 'paket-tour/:slug',
+    redirectTo: 'packages/:slug',
   },
   {
     path: 'hotels',

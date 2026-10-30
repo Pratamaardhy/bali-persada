@@ -1,0 +1,552 @@
+@if (pkg(); as packageData) {
+  <div class="package-detail-page">
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-bar">
+      <div class="container breadcrumb-inner">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+          <a routerLink="/">{{ t().packageDetail.breadcrumbHome }}</a>
+          <span class="bc-sep">/</span>
+          <a routerLink="/packages">{{ t().packageDetail.breadcrumbPackages }}</a>
+          @if (categoryLabel(); as catName) {
+            <span class="bc-sep">/</span>
+            <a routerLink="/packages" [queryParams]="{ category: packageData.category }">
+              {{ catName }}
+            </a>
+          }
+          <span class="bc-sep">/</span>
+          <span class="bc-current">{{ packageData.title[lang()] }}</span>
+        </nav>
+
+        <a routerLink="/packages" class="back-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>{{ t().packageDetail.backToCatalog }}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="container detail-layout">
+      <!-- Main Content Column -->
+      <div class="detail-main">
+        <!-- Header Info -->
+        <div class="package-header">
+          <div class="meta-tags">
+            @if (categoryLabel(); as catName) {
+              <span class="badge badge--teal">{{ catName }}</span>
+            }
+            @if (packageData.badge) {
+              <span class="badge badge--ocean">{{ packageData.badge[lang()] }}</span>
+            }
+            <span class="badge badge--sand">{{ packageData.code }}</span>
+          </div>
+
+          <h1 class="package-title">{{ packageData.title[lang()] }}</h1>
+          <p class="package-lead">{{ packageData.tagline[lang()] }}</p>
+
+          <div class="package-quick-specs">
+            <div class="spec-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ packageData.duration[lang()] }}</span>
+            </div>
+            <div class="spec-divider"></div>
+            <div class="spec-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{{ packageData.destination }}</span>
+            </div>
+            <div class="spec-divider"></div>
+            <div class="spec-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>{{ packageData.minParticipants[lang()] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Gallery -->
+        <div class="gallery-wrapper">
+          <div class="main-image">
+            <img
+              [src]="selectedImage()"
+              [alt]="packageData.title[lang()]"
+              (error)="onMainImageError()"
+            />
+          </div>
+          @if (packageData.images.length > 1) {
+            <div class="thumbnails-row">
+              @for (img of packageData.images; track img) {
+                <button
+                  type="button"
+                  class="thumbnail-btn"
+                  [class.active]="selectedImage() === img"
+                  (click)="selectedImage.set(img)"
+                >
+                  <img [src]="img" alt="Thumbnail" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Quick Section Jump Bar -->
+        <div class="section-jump-bar" role="navigation" aria-label="Section shortcuts">
+          <button type="button" class="jump-btn" (click)="scrollToSection('sec-overview')">
+            {{ t().packageDetail.navOverview }}
+          </button>
+          <button type="button" class="jump-btn" (click)="scrollToSection('sec-itinerary')">
+            {{ t().packageDetail.navItinerary }}
+          </button>
+          <button type="button" class="jump-btn" (click)="scrollToSection('sec-inclusions')">
+            {{ t().packageDetail.navInclusions }}
+          </button>
+          <button type="button" class="jump-btn" (click)="scrollToSection('sec-pricing')">
+            {{ t().packageDetail.navPricing }}
+          </button>
+          <button type="button" class="jump-btn" (click)="scrollToSection('sec-hotels')">
+            {{ t().packageDetail.navHotels }}
+          </button>
+        </div>
+
+        <!-- Overview & Highlights -->
+        <section class="content-block" id="sec-overview">
+          <h2 class="block-title">{{ t().packageDetail.overview }}</h2>
+          <p class="overview-text">{{ packageData.description[lang()] }}</p>
+
+          <h3 class="sub-block-title">{{ t().packageDetail.highlights }}</h3>
+          <ul class="highlights-list">
+            @for (item of packageData.highlights[lang()]; track $index) {
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="check-icon">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ item }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <!-- Route Variants & Program Wisata (Itinerary) -->
+        <section class="content-block" id="sec-itinerary">
+          @if (packageData.routeOptions && packageData.routeOptions.length > 1) {
+            <div class="route-switcher-box">
+              <h2 class="block-title block-title--no-border">{{ t().packageDetail.routeOptionsTitle }}</h2>
+              <p class="route-helper-text">{{ t().packageDetail.routeOptionsSubtitle }}</p>
+
+              <div class="route-tabs" role="tablist">
+                @for (opt of packageData.routeOptions; track opt.id; let idx = $index) {
+                  <button
+                    type="button"
+                    role="tab"
+                    class="route-tab-card"
+                    [class.active]="selectedRouteIndex() === idx"
+                    [attr.aria-selected]="selectedRouteIndex() === idx"
+                    (click)="selectedRouteIndex.set(idx)"
+                  >
+                    <div class="route-tab-head">
+                      <span class="route-code-badge">{{ t().common.routeOptionsBadge }} {{ opt.code }}</span>
+                      @if (selectedRouteIndex() === idx) {
+                        <span class="route-active-dot"></span>
+                      }
+                    </div>
+                    <strong class="route-tab-label">{{ opt.label[lang()] }}</strong>
+                    <span class="route-tab-sub">{{ opt.subtitle[lang()] }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Program Wisata Summary -->
+          <h2 class="block-title">{{ t().packageDetail.programSummary }}</h2>
+          <div class="itinerary-timeline">
+            @for (day of activeItinerary(); track day.day) {
+              <div class="itinerary-day">
+                <div class="day-badge">
+                  <span>{{ t().packageDetail.dayPrefix }}{{ day.day }}</span>
+                </div>
+                <div class="day-content">
+                  <h3 class="day-title">{{ day.title[lang()] }}</h3>
+                  @if (day.summary) {
+                    <p class="day-summary">{{ day.summary[lang()] }}</p>
+                  }
+                  <ul class="day-activities">
+                    @for (act of day.activities[lang()]; track $index) {
+                      <li>{{ act }}</li>
+                    }
+                  </ul>
+
+                  <!-- Detailed Numbered Steps (1.1, 1.2, ...) when available -->
+                  @if (day.steps && day.steps.length > 0) {
+                    <div class="detailed-steps-box">
+                      <span class="steps-heading">{{ t().packageDetail.detailedSchedule }} — {{ t().packageDetail.dayPrefix }}{{ day.day }}</span>
+                      <div class="steps-list">
+                        @for (step of day.steps; track step.code) {
+                          <div class="step-row">
+                            <div class="step-meta">
+                              <span class="step-code">{{ step.code }}</span>
+                              @if (step.time) {
+                                <span class="step-time">{{ step.time }}</span>
+                              }
+                            </div>
+                            <div class="step-body">
+                              <h4 class="step-title">{{ step.title[lang()] }}</h4>
+                              <p class="step-desc">{{ step.description[lang()] }}</p>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Inclusions, Exclusions & Child Policy -->
+        <section class="content-block" id="sec-inclusions">
+          <div class="inclusions-grid">
+            <div class="incl-box incl-box--in">
+              <h3 class="incl-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ t().packageDetail.inclusions }}</span>
+              </h3>
+              <ul>
+                @for (item of packageData.inclusions[lang()]; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </div>
+
+            <div class="incl-box incl-box--ex">
+              <h3 class="incl-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span>{{ t().packageDetail.exclusions }}</span>
+              </h3>
+              <ul>
+                @for (item of packageData.exclusions[lang()]; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          <!-- Child Pricing Policy -->
+          @if (packageData.childPolicy && packageData.childPolicy[lang()].length > 0) {
+            <div class="child-policy-box">
+              <h3 class="policy-heading">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                <span>{{ t().packageDetail.childPolicyTitle }}</span>
+              </h3>
+              <ul>
+                @for (cp of packageData.childPolicy[lang()]; track $index) {
+                  <li>{{ cp }}</li>
+                }
+              </ul>
+            </div>
+          }
+
+          <!-- Important Notes / Additional Terms -->
+          <div class="notes-sub-section">
+            <h3 class="sub-block-title">{{ t().packageDetail.importantNotes }}</h3>
+            <ul class="notes-list">
+              @for (note of packageData.importantNotes[lang()]; track $index) {
+                <li>{{ note }}</li>
+              }
+            </ul>
+          </div>
+        </section>
+
+        <!-- Normal Season Pricing Table -->
+        <section class="content-block" id="sec-pricing">
+          <h2 class="block-title">{{ t().packageDetail.pricingTableTitle }}</h2>
+          <p class="pricing-subtitle">{{ t().packageDetail.pricingTableSubtitle }}</p>
+
+          <div class="pricing-table-scroll">
+            <table class="pricing-table">
+              <thead>
+                <tr>
+                  <th class="col-tier">{{ t().packageDetail.pricingTierCol }}</th>
+                  @for (bracket of tableColumns(); track bracket.paxLabel.id) {
+                    <th class="col-price">{{ bracket.paxLabel[lang()] }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of packageData.pricingTable; track row.id; let rIdx = $index) {
+                  <tr [class.selected-row]="selectedTierIndex() === rIdx">
+                    <td class="tier-cell">
+                      <strong class="tier-name">{{ row.tierName[lang()] }}</strong>
+                      @if (row.hotelsExample) {
+                        <span class="tier-hotels">{{ row.hotelsExample[lang()] }}</span>
+                      }
+                    </td>
+                    @for (b of row.brackets; track b.paxLabel.id; let bIdx = $index) {
+                      <td class="price-cell">
+                        <button
+                          type="button"
+                          class="price-select-btn"
+                          [class.active]="selectedTierIndex() === rIdx && selectedBracketIndex() === bIdx"
+                          (click)="selectPricingCell(rIdx, bIdx)"
+                        >
+                          <span class="cell-rp">Rp</span>
+                          <span class="cell-amt">{{ formatPrice(b.pricePerPax) }}</span>
+                        </button>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <p class="pricing-hint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>{{ t().packageDetail.pricingSelectHint }}</span>
+          </p>
+        </section>
+
+        <!-- Partner Hotel & Resort Information -->
+        <section class="content-block" id="sec-hotels">
+          <div class="hotel-info-header">
+            <div>
+              <h2 class="block-title block-title--no-border">{{ t().packageDetail.hotelInfoTitle }}</h2>
+              <p class="pricing-subtitle">{{ t().packageDetail.hotelInfoSubtitle }}</p>
+            </div>
+            <a routerLink="/hotels" class="btn btn--outline btn--sm">
+              {{ t().packageDetail.viewHotelCatalog }}
+            </a>
+          </div>
+
+          <div class="mini-hotels-grid">
+            @for (htl of recommendedHotels(); track htl.id) {
+              <a [routerLink]="['/hotels', htl.slug]" class="mini-hotel-card">
+                <div class="mini-hotel-img">
+                  <img [src]="htl.images[0]" [alt]="htl.name" loading="lazy" />
+                  <span class="mini-hotel-area">{{ htl.area }}</span>
+                </div>
+                <div class="mini-hotel-body">
+                  <span class="mini-hotel-cat">{{ htl.categoryLabel[lang()] }}</span>
+                  <h4 class="mini-hotel-title">{{ htl.name }}</h4>
+                  <span class="mini-hotel-rate">
+                    {{ t().common.from }} Rp {{ formatPrice(htl.pricePerNight) }} {{ htl.priceUnit[lang()] }}
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      </div>
+
+      <!-- Mobile Drawer Backdrop (when opened on < 1024px) -->
+      @if (isMobileDrawerOpen()) {
+        <div class="sidebar-drawer-backdrop" (click)="closeMobileDrawer()"></div>
+      }
+
+      <!-- Sidebar Sticky Interactive Booking Estimator (Adapts inline & transforms into Mobile Drawer) -->
+      <aside
+        class="detail-sidebar"
+        [class.drawer-open]="isMobileDrawerOpen()"
+        [attr.aria-modal]="isMobileDrawerOpen() ? 'true' : null"
+      >
+        <div class="cta-sidebar-card">
+          @if (isMobileDrawerOpen()) {
+            <div class="drawer-top-bar">
+              <strong class="drawer-heading">{{ t().packageDetail.estimatorTitle }}</strong>
+              <button
+                type="button"
+                class="drawer-close-btn"
+                (click)="closeMobileDrawer()"
+                aria-label="Close options drawer"
+              >
+                &times;
+              </button>
+            </div>
+          }
+
+          <span class="cta-sub">{{ t().packageDetail.estimatedRateLabel }}</span>
+          <div class="cta-price-row">
+            <span class="currency">Rp</span>
+            <span class="amount">{{ formatPrice(currentEstimatedPrice()) }}</span>
+            <span class="unit">{{ packageData.priceUnit[lang()] }}</span>
+          </div>
+
+          <div class="price-disclaimer-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>{{ t().packageDetail.indicativePriceNotice }}</span>
+          </div>
+
+          <div class="sidebar-divider"></div>
+
+          <!-- Interactive Configurator Form -->
+          <div class="estimator-form">
+            <h4 class="cta-card-heading">{{ t().packageDetail.estimatorTitle }}</h4>
+
+            @if (packageData.routeOptions && packageData.routeOptions.length > 1) {
+              <div class="est-field">
+                <label for="est-route" class="est-label">{{ t().packageDetail.selectRouteLabel }}</label>
+                <select
+                  id="est-route"
+                  class="est-select"
+                  [ngModel]="selectedRouteIndex()"
+                  (ngModelChange)="selectedRouteIndex.set(+$event)"
+                >
+                  @for (opt of packageData.routeOptions; track opt.id; let idx = $index) {
+                    <option [ngValue]="idx">{{ opt.label[lang()] }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <div class="est-field">
+              <label for="est-tier" class="est-label">{{ t().packageDetail.selectTierLabel }}</label>
+              <select
+                id="est-tier"
+                class="est-select"
+                [ngModel]="selectedTierIndex()"
+                (ngModelChange)="onTierChange(+$event)"
+              >
+                @for (tier of packageData.pricingTable; track tier.id; let idx = $index) {
+                  <option [ngValue]="idx">{{ tier.tierName[lang()] }}</option>
+                }
+              </select>
+            </div>
+
+            @if (activeTier(); as currentTier) {
+              @if (currentTier.brackets.length > 1) {
+                <div class="est-field">
+                  <label class="est-label">{{ t().packageDetail.selectPaxLabel }}</label>
+                  <div class="pax-chips">
+                    @for (b of currentTier.brackets; track b.paxLabel.id; let bIdx = $index) {
+                      <button
+                        type="button"
+                        class="pax-chip"
+                        [class.active]="selectedBracketIndex() === bIdx"
+                        (click)="selectedBracketIndex.set(bIdx)"
+                      >
+                        {{ b.paxLabel[lang()] }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            }
+
+            <div class="est-field">
+              <label for="est-date" class="est-label">{{ t().packageDetail.travelDateLabel }}</label>
+              <input
+                id="est-date"
+                type="text"
+                class="est-input"
+                [placeholder]="t().packageDetail.travelDatePlaceholder"
+                [ngModel]="plannedDate()"
+                (ngModelChange)="plannedDate.set($event)"
+              />
+            </div>
+          </div>
+
+          <p class="cta-card-desc">{{ t().packageDetail.ctaCardDesc }}</p>
+
+          <button
+            type="button"
+            class="btn btn--whatsapp btn--full btn--lg sidebar-wa-btn"
+            (click)="onConsultWhatsApp(packageData)"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.288.043.088.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.2.662.589 1.221.771 1.394.858.173.086.274.072.375-.043s.433-.505.549-.679c.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/>
+            </svg>
+            <span>{{ t().packageDetail.askWhatsApp }}</span>
+          </button>
+
+          <p class="redirect-hint">{{ t().packageDetail.waRedirectNotice }}</p>
+
+          <div class="sidebar-contact-info">
+            <span>WhatsApp: {{ waService.displayPhoneNumber }}</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Related Tour Packages Section -->
+    @if (relatedPackages().length > 0) {
+      <section class="related-section">
+        <div class="container">
+          <div class="related-header">
+            <h2 class="related-title">{{ t().packageDetail.relatedPackagesTitle }}</h2>
+            <p class="related-sub">{{ t().packageDetail.relatedPackagesSubtitle }}</p>
+          </div>
+          <div class="card-grid">
+            @for (rel of relatedPackages(); track rel.id) {
+              <app-package-card [pkg]="rel"></app-package-card>
+            }
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Mobile Sticky Bottom Bar -->
+    <div class="mobile-sticky-cta">
+      <div class="mobile-price-col">
+        <span class="m-label">{{ t().packageDetail.estimatedRateLabel }}</span>
+        <strong class="m-price">
+          Rp {{ formatPrice(currentEstimatedPrice()) }}
+          <small>{{ packageData.priceUnit[lang()] }}</small>
+        </strong>
+      </div>
+      <div class="mobile-cta-actions">
+        <button
+          type="button"
+          class="btn btn--outline btn--sm mobile-opt-btn"
+          (click)="openMobileDrawer()"
+        >
+          {{ lang() === 'id' ? 'Atur Opsi' : 'Options' }}
+        </button>
+        <button
+          type="button"
+          class="btn btn--whatsapp btn--sm mobile-wa-action"
+          (click)="onConsultWhatsApp(packageData)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.288.043.088.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.2.662.589 1.221.771 1.394.858.173.086.274.072.375-.043s.433-.505.549-.679c.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </div>
+} @else {
+  <!-- Not Found State -->
+  <div class="container not-found-state">
+    <h2 class="nf-title">{{ t().packageDetail.notFoundTitle }}</h2>
+    <p class="nf-desc">{{ t().packageDetail.notFoundDesc }}</p>
+    <a routerLink="/packages" class="btn btn--primary">
+      {{ t().packageDetail.backToCatalog }}
+    </a>
+  </div>
+}

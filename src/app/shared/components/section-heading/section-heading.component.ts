@@ -17,9 +17,22 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
     .section-heading {
-      margin-bottom: var(--space-10);
+      width: 100%;
+      margin-bottom: var(--space-6);
       max-width: 680px;
+      min-width: 0;
+    }
+    @media (min-width: 768px) {
+      .section-heading {
+        margin-bottom: var(--space-10);
+      }
     }
     .section-heading.center {
       text-align: center;
@@ -28,29 +41,33 @@ import { CommonModule } from '@angular/common';
     }
     .section-tag {
       display: inline-block;
+      max-width: 100%;
       text-transform: uppercase;
-      font-size: 0.8125rem;
+      font-size: 0.78rem;
       letter-spacing: 0.08em;
       font-weight: 700;
       color: var(--color-teal);
       margin-bottom: var(--space-2);
+      overflow-wrap: break-word;
     }
     .section-heading.dark .section-tag {
       color: var(--color-teal-light);
     }
     .section-title {
-      font-size: clamp(1.65rem, 2.5vw + 0.5rem, 2.25rem);
+      font-size: clamp(1.45rem, 2.5vw + 0.5rem, 2.25rem);
       margin-bottom: var(--space-3);
       color: var(--color-ocean);
       line-height: 1.25;
+      overflow-wrap: break-word;
     }
     .section-heading.dark .section-title {
       color: var(--color-white);
     }
     .section-subtitle {
-      font-size: 1.0625rem;
+      font-size: clamp(0.9375rem, 1.1vw + 0.4rem, 1.0625rem);
       color: var(--color-text-secondary);
       line-height: 1.6;
+      overflow-wrap: break-word;
     }
     .section-heading.dark .section-subtitle {
       color: rgba(255, 255, 255, 0.85);

@@ -1,9 +1,10 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TourPackage } from '../../../core/models/package.model';
 import { LanguageService } from '../../../core/services/language.service';
 import { WhatsAppService } from '../../../core/services/whatsapp.service';
+import { CatalogService } from '../../../core/services/catalog.service';
 
 @Component({
   selector: 'app-package-card',
@@ -11,7 +12,7 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
   imports: [CommonModule, RouterModule],
   template: `
     <article class="package-card">
-      <div class="card-media">
+      <a [routerLink]="['/packages', pkg.slug]" class="card-media" [attr.aria-label]="pkg.title[lang()]">
         <img
           [src]="imageSrc"
           [alt]="pkg.title[lang()]"
@@ -21,22 +22,30 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
         @if (pkg.badge) {
           <span class="card-badge">{{ pkg.badge[lang()] }}</span>
         }
+        @if (pkg.routeOptions && pkg.routeOptions.length > 1) {
+          <span class="card-route-pill">
+            {{ pkg.routeOptions.length }} {{ t().common.routeOptionsBadge }}
+          </span>
+        }
         <span class="card-duration">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
           {{ pkg.duration[lang()] }}
         </span>
-      </div>
+      </a>
 
       <div class="card-body">
-        <div class="card-destination">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          <span>{{ pkg.destination }}</span>
+        <div class="card-meta-top">
+          <div class="card-destination">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>{{ pkg.destination }}</span>
+          </div>
+          <span class="card-code">{{ categoryShortLabel }}</span>
         </div>
 
         <h3 class="card-title">
@@ -44,6 +53,22 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
         </h3>
 
         <p class="card-tagline">{{ pkg.tagline[lang()] }}</p>
+
+        <!-- Quick Facility Pills -->
+        <div class="card-facilities">
+          <span class="fac-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ t().common.privateTransport }}
+          </span>
+          <span class="fac-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ pkg.pricingTable.length }} {{ lang() === 'id' ? 'Pilihan Paket' : 'Tier Options' }}
+          </span>
+        </div>
 
         <div class="card-pricing">
           <span class="price-label">{{ t().common.from }}</span>
@@ -56,7 +81,7 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
 
         <div class="card-actions">
           <a [routerLink]="['/packages', pkg.slug]" class="btn btn--outline btn--sm btn-detail">
-            {{ t().common.viewDetails }}
+            <span>{{ t().common.viewDetails }}</span>
           </a>
           <button
             type="button"
@@ -74,7 +99,13 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     </article>
   `,
   styles: [`
+    :host {
+      display: block;
+      min-width: 0;
+    }
     .package-card {
+      width: 100%;
+      min-width: 0;
       background-color: var(--color-white);
       border-radius: var(--radius-md);
       overflow: hidden;
@@ -86,11 +117,12 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       height: 100%;
     }
     .package-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--color-border-hover);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--color-teal);
     }
     .card-media {
+      display: block;
       position: relative;
       aspect-ratio: 16 / 10;
       overflow: hidden;
@@ -100,44 +132,81 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform var(--transition-normal);
+      transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
     }
     .package-card:hover .card-media img {
-      transform: scale(1.03);
+      transform: scale(1.04);
     }
     .card-badge {
       position: absolute;
       top: 0.75rem;
       left: 0.75rem;
-      background-color: rgba(18, 59, 80, 0.9);
+      max-width: calc(100% - 1.5rem);
+      background-color: rgba(18, 59, 80, 0.92);
       backdrop-filter: blur(4px);
       color: var(--color-white);
-      padding: 0.3rem 0.65rem;
+      padding: 0.3rem 0.7rem;
       border-radius: var(--radius-full);
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.02em;
+    }
+    .card-route-pill {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      max-width: calc(46% - 0.75rem);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background-color: rgba(47, 143, 131, 0.94);
+      color: var(--color-white);
+      padding: 0.22rem 0.55rem;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 700;
     }
     .card-duration {
       position: absolute;
       bottom: 0.75rem;
       right: 0.75rem;
-      background-color: rgba(255, 255, 255, 0.92);
+      max-width: calc(52% - 0.75rem);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background-color: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(4px);
       color: var(--color-ocean);
-      padding: 0.25rem 0.55rem;
+      padding: 0.25rem 0.6rem;
       border-radius: var(--radius-full);
       font-size: 0.75rem;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
+      box-shadow: 0 2px 6px rgba(18, 59, 80, 0.12);
+    }
+    .card-duration svg {
+      flex-shrink: 0;
     }
     .card-body {
-      padding: 1.25rem;
+      padding: 1.15rem;
       display: flex;
       flex-direction: column;
       flex: 1;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .card-body {
+        padding: 1.25rem;
+      }
+    }
+    .card-meta-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.45rem;
     }
     .card-destination {
       display: inline-flex;
@@ -146,10 +215,31 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       color: var(--color-teal);
       font-size: 0.8125rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      min-width: 0;
+    }
+    .card-destination svg {
+      flex-shrink: 0;
+    }
+    .card-destination span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card-code {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--color-ocean);
+      background-color: var(--color-sand);
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-xs);
+      max-width: 48%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .card-title {
-      font-size: 1.125rem;
+      font-size: 1.1rem;
       line-height: 1.35;
       margin-bottom: 0.5rem;
     }
@@ -160,14 +250,31 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       color: var(--color-teal);
     }
     .card-tagline {
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       color: var(--color-text-secondary);
       line-height: 1.5;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.9rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+    .card-facilities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .fac-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-teal-dark);
+      background-color: var(--color-teal-surface);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-xs);
     }
     .card-pricing {
       margin-top: auto;
@@ -177,10 +284,10 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     }
     .price-label {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--color-text-muted);
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.04em;
     }
     .price-value-row {
@@ -206,34 +313,42 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     }
     .card-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
       gap: 0.5rem;
     }
-    .btn-detail {
-      font-size: 0.8125rem;
-    }
+    .btn-detail,
     .btn-wa {
+      width: 100%;
       font-size: 0.8125rem;
     }
   `],
 })
-export class PackageCardComponent {
+export class PackageCardComponent implements OnInit {
   @Input({ required: true }) pkg!: TourPackage;
 
   private readonly langService = inject(LanguageService);
   private readonly waService = inject(WhatsAppService);
+  private readonly catalogService = inject(CatalogService);
 
   readonly lang = this.langService.currentLang;
   readonly t = this.langService.t;
 
-  imageSrc: string = '';
+  imageSrc = '';
 
   ngOnInit(): void {
-    this.imageSrc = this.pkg.images?.[0] || 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80';
+    this.imageSrc =
+      this.pkg.images?.[0] ||
+      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80';
+  }
+
+  get categoryShortLabel(): string {
+    const meta = this.catalogService.getCategoryMeta(this.pkg.category);
+    return meta ? meta.shortTitle[this.lang()] : this.pkg.code;
   }
 
   onImageError(): void {
-    this.imageSrc = 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80';
+    this.imageSrc =
+      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80';
   }
 
   formatPrice(price: number): string {

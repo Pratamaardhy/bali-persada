@@ -31,6 +31,10 @@ import { Language } from '../../../core/models/translation.model';
     </div>
   `,
   styles: [`
+    :host {
+      display: inline-flex;
+      flex-shrink: 0;
+    }
     .lang-switch {
       display: inline-flex;
       align-items: center;

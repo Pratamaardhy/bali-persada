@@ -141,11 +141,21 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
     </div>
   `,
   styles: [`
+    .contact-page,
+    .page-header {
+      width: 100%;
+      max-width: 100%;
+    }
     .page-header {
       background: linear-gradient(180deg, #123B50 0%, #1C4E68 100%);
       color: var(--color-white);
-      padding: var(--space-12) 0 var(--space-10);
+      padding: var(--space-8) 0 var(--space-8);
       text-align: center;
+    }
+    @media (min-width: 768px) {
+      .page-header {
+        padding: var(--space-12) 0 var(--space-10);
+      }
     }
     .header-inner {
       max-width: 720px;
@@ -154,12 +164,12 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
       margin-bottom: var(--space-3);
     }
     .page-title {
-      font-size: clamp(2rem, 3.5vw + 0.5rem, 2.75rem);
+      font-size: clamp(1.65rem, 3.5vw + 0.5rem, 2.75rem);
       color: var(--color-white);
       margin-bottom: var(--space-3);
     }
     .page-subtitle {
-      font-size: 1.0625rem;
+      font-size: clamp(0.95rem, 1.2vw + 0.4rem, 1.0625rem);
       color: rgba(255, 255, 255, 0.85);
       line-height: 1.6;
     }
@@ -167,30 +177,44 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
       max-width: 840px;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1.5rem;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .contact-container {
+        gap: 2rem;
+      }
     }
     .wa-primary-card {
+      width: 100%;
+      min-width: 0;
       background-color: var(--color-white);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      padding: 2.25rem 2rem;
+      padding: 1.5rem 1.25rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 1.25rem;
+      gap: 1.15rem;
+    }
+    @media (min-width: 640px) {
+      .wa-primary-card {
+        padding: 2.25rem 2rem;
+      }
     }
     @media (min-width: 768px) {
       .wa-primary-card {
         flex-direction: row;
         text-align: left;
         justify-content: space-between;
+        gap: 1.5rem;
       }
     }
     .wa-icon-large {
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
       border-radius: var(--radius-full);
       background-color: var(--color-wa-surface);
       color: #1EBE5D;
@@ -199,11 +223,19 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
       justify-content: center;
       flex-shrink: 0;
     }
+    @media (min-width: 640px) {
+      .wa-icon-large {
+        width: 64px;
+        height: 64px;
+      }
+    }
     .wa-content {
       flex: 1;
+      min-width: 0;
+      width: 100%;
     }
     .wa-title {
-      font-size: 1.35rem;
+      font-size: clamp(1.2rem, 1.8vw + 0.3rem, 1.35rem);
       color: var(--color-ocean);
       margin-bottom: 0.35rem;
     }
@@ -215,22 +247,36 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
     }
     .wa-phone-highlight {
       font-family: var(--font-heading);
-      font-size: 1.25rem;
+      font-size: clamp(1.1rem, 2vw + 0.3rem, 1.25rem);
       font-weight: 800;
       color: var(--color-teal-dark);
+      overflow-wrap: anywhere;
     }
     .wa-btn-action {
+      width: 100%;
       flex-shrink: 0;
     }
+    @media (min-width: 768px) {
+      .wa-btn-action {
+        width: auto;
+      }
+    }
     .inquiry-form-card {
+      width: 100%;
+      min-width: 0;
       background-color: var(--color-white);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      padding: 2.5rem 2rem;
+      padding: 1.5rem 1.25rem;
       box-shadow: var(--shadow-sm);
     }
+    @media (min-width: 640px) {
+      .inquiry-form-card {
+        padding: 2.5rem 2rem;
+      }
+    }
     .form-title {
-      font-size: 1.4rem;
+      font-size: clamp(1.25rem, 1.8vw + 0.3rem, 1.4rem);
       color: var(--color-ocean);
       margin-bottom: 0.5rem;
     }
@@ -238,24 +284,26 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
       font-size: 0.9375rem;
       color: var(--color-text-secondary);
       line-height: 1.55;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
     }
     .inquiry-form {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      width: 100%;
     }
     .form-row {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0 1rem;
     }
     @media (min-width: 640px) {
       .form-row {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
     .submit-btn {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       margin-bottom: 1.25rem;
     }
     .submit-btn:disabled {
@@ -266,12 +314,16 @@ import { WhatsAppService, InquiryFormData } from '../../core/services/whatsapp.s
       display: flex;
       align-items: flex-start;
       gap: 0.5rem;
+      min-width: 0;
       font-size: 0.8125rem;
       color: var(--color-text-muted);
       line-height: 1.5;
       padding: 0.75rem 1rem;
       background-color: var(--color-sand-light);
       border-radius: var(--radius-sm);
+    }
+    .form-disclaimer p {
+      min-width: 0;
     }
     .form-disclaimer svg {
       flex-shrink: 0;

@@ -10,6 +10,7 @@ import { Hotel } from '../../../../core/models/hotel.model';
   selector: 'app-hotel-detail',
   standalone: true,
   imports: [CommonModule, RouterModule],
+  styleUrl: './hotel-detail.component.css',
   template: `
     @if (hotel(); as hotelData) {
       <div class="hotel-detail-page">
@@ -57,7 +58,7 @@ import { Hotel } from '../../../../core/models/hotel.model';
               </div>
               @if (hotelData.images.length > 1) {
                 <div class="thumbnails-row">
-                  @for (img of hotelData.images; track img) {
+                  @for (img of hotelData.images; track $index) {
                     <button
                       type="button"
                       class="thumbnail-btn"
@@ -81,7 +82,7 @@ import { Hotel } from '../../../../core/models/hotel.model';
             <section class="content-block">
               <h2 class="block-title">{{ t().hotelDetail.facilities }}</h2>
               <div class="facilities-grid">
-                @for (fac of hotelData.facilities[lang()]; track fac) {
+                @for (fac of hotelData.facilities[lang()]; track $index) {
                   <div class="facility-item">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fac-icon">
                       <polyline points="20 6 9 17 4 12"></polyline>
@@ -96,7 +97,7 @@ import { Hotel } from '../../../../core/models/hotel.model';
             <section class="content-block">
               <h2 class="block-title">{{ t().hotelDetail.roomTypes }}</h2>
               <div class="rooms-list">
-                @for (room of hotelData.roomTypes; track room.name.id) {
+                @for (room of hotelData.roomTypes; track $index) {
                   <div class="room-card">
                     <h3 class="room-name">{{ room.name[lang()] }}</h3>
                     <div class="room-specs">
@@ -122,7 +123,7 @@ import { Hotel } from '../../../../core/models/hotel.model';
             <section class="content-block">
               <h2 class="block-title">{{ t().hotelDetail.nearbyTitle }}</h2>
               <ul class="nearby-list">
-                @for (item of hotelData.nearbyAttractions[lang()]; track item) {
+                @for (item of hotelData.nearbyAttractions[lang()]; track $index) {
                   <li>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -135,9 +136,34 @@ import { Hotel } from '../../../../core/models/hotel.model';
             </section>
           </main>
 
-          <!-- Sidebar Sticky CTA Column -->
-          <aside class="detail-sidebar">
+          <!-- Mobile Drawer Backdrop -->
+          @if (isMobileDrawerOpen()) {
+            <div
+              class="sidebar-drawer-backdrop"
+              (click)="closeMobileDrawer()"
+              aria-hidden="true"
+            ></div>
+          }
+
+          <!-- Sidebar Sticky CTA Column / Mobile Bottom Drawer -->
+          <aside class="detail-sidebar" [class.drawer-open]="isMobileDrawerOpen()">
             <div class="cta-sidebar-card">
+              @if (isMobileDrawerOpen()) {
+                <div class="drawer-top-bar">
+                  <strong class="drawer-heading">
+                    {{ lang() === 'id' ? 'Info Tarif & Konsultasi' : 'Rate Info & Consultation' }}
+                  </strong>
+                  <button
+                    type="button"
+                    class="drawer-close-btn"
+                    (click)="closeMobileDrawer()"
+                    [attr.aria-label]="lang() === 'id' ? 'Tutup panel' : 'Close panel'"
+                  >
+                    &times;
+                  </button>
+                </div>
+              }
+
               <span class="cta-sub">{{ t().hotelDetail.indicativeRate }}</span>
               <div class="cta-price-row">
                 <span class="currency">Rp</span>
@@ -178,6 +204,36 @@ import { Hotel } from '../../../../core/models/hotel.model';
             </div>
           </aside>
         </div>
+
+        <!-- Mobile Sticky Bottom CTA Bar -->
+        <div class="mobile-sticky-cta">
+          <div class="mobile-price-col">
+            <span class="m-label">{{ t().hotelDetail.indicativeRate }}</span>
+            <strong class="m-price">
+              Rp {{ formatPrice(hotelData.pricePerNight) }}
+              <small>{{ hotelData.priceUnit[lang()] }}</small>
+            </strong>
+          </div>
+          <div class="mobile-cta-actions">
+            <button
+              type="button"
+              class="btn btn--outline btn--sm mobile-opt-btn"
+              (click)="openMobileDrawer()"
+            >
+              {{ lang() === 'id' ? 'Detail Tarif' : 'Rate Info' }}
+            </button>
+            <button
+              type="button"
+              class="btn btn--whatsapp btn--sm mobile-wa-action"
+              (click)="onConsultWhatsApp(hotelData)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.288.043.088.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.2.662.589 1.221.771 1.394.858.173.086.274.072.375-.043s.433-.505.549-.679c.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/>
+              </svg>
+              <span>WhatsApp</span>
+            </button>
+          </div>
+        </div>
       </div>
     } @else {
       <!-- Not Found State -->
@@ -190,311 +246,6 @@ import { Hotel } from '../../../../core/models/hotel.model';
       </div>
     }
   `,
-  styles: [`
-    .hotel-detail-page {
-      padding-bottom: var(--space-20);
-      background-color: var(--color-sand-light);
-    }
-    .detail-top-bar {
-      padding-top: var(--space-6);
-      padding-bottom: var(--space-4);
-    }
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--color-teal);
-    }
-    .back-link:hover {
-      color: var(--color-teal-dark);
-    }
-    .detail-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
-      align-items: start;
-    }
-    @media (min-width: 1024px) {
-      .detail-layout {
-        grid-template-columns: 1fr 380px;
-        gap: 3.5rem;
-      }
-    }
-    .hotel-header {
-      margin-bottom: var(--space-6);
-    }
-    .meta-tags {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    .hotel-title {
-      font-size: clamp(1.75rem, 3vw + 0.5rem, 2.5rem);
-      margin-bottom: 0.5rem;
-      color: var(--color-ocean);
-      line-height: 1.25;
-    }
-    .hotel-location-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.9375rem;
-      color: var(--color-text-secondary);
-    }
-    .gallery-wrapper {
-      margin-bottom: var(--space-10);
-    }
-    .main-image {
-      aspect-ratio: 16 / 10;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background-color: var(--color-ocean-subtle);
-      box-shadow: var(--shadow-md);
-      margin-bottom: 0.75rem;
-    }
-    .main-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .thumbnails-row {
-      display: flex;
-      gap: 0.75rem;
-      overflow-x: auto;
-      padding-bottom: 0.25rem;
-    }
-    .thumbnail-btn {
-      width: 90px;
-      height: 60px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 2px solid transparent;
-      opacity: 0.75;
-      padding: 0;
-      transition: all var(--transition-fast);
-      flex-shrink: 0;
-    }
-    .thumbnail-btn.active,
-    .thumbnail-btn:hover {
-      opacity: 1;
-      border-color: var(--color-teal);
-    }
-    .thumbnail-btn img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .content-block {
-      background-color: var(--color-white);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .block-title {
-      font-size: 1.35rem;
-      color: var(--color-ocean);
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--color-sand-border);
-    }
-    .overview-text {
-      font-size: 1.05rem;
-      line-height: 1.7;
-      color: var(--color-text-secondary);
-    }
-    .facilities-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.85rem;
-    }
-    @media (min-width: 640px) {
-      .facilities-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .facility-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.9375rem;
-      color: var(--color-text-dark);
-    }
-    .fac-icon {
-      color: var(--color-teal);
-      flex-shrink: 0;
-    }
-    .rooms-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .room-card {
-      background-color: var(--color-sand-light);
-      border: 1px solid var(--color-sand-border);
-      border-radius: var(--radius-md);
-      padding: 1.25rem 1.5rem;
-    }
-    .room-name {
-      font-size: 1.1rem;
-      color: var(--color-ocean);
-      margin-bottom: 0.75rem;
-    }
-    .room-specs {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-    }
-    @media (min-width: 640px) {
-      .room-specs {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    .room-spec {
-      display: flex;
-      flex-direction: column;
-    }
-    .spec-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      font-weight: 600;
-    }
-    .spec-value {
-      font-size: 0.875rem;
-      color: var(--color-text-dark);
-      font-weight: 500;
-    }
-    .nearby-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-    .nearby-list li {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      font-size: 0.9375rem;
-      color: var(--color-text-secondary);
-    }
-    .nearby-list svg {
-      color: var(--color-teal);
-      flex-shrink: 0;
-    }
-
-    /* SIDEBAR */
-    .detail-sidebar {
-      position: sticky;
-      top: 96px;
-    }
-    .cta-sidebar-card {
-      background-color: var(--color-white);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem 1.75rem;
-      box-shadow: var(--shadow-md);
-    }
-    .cta-sub {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .cta-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 0.35rem;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .cta-price-row .currency {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--color-teal-dark);
-    }
-    .cta-price-row .amount {
-      font-family: var(--font-heading);
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--color-teal-dark);
-    }
-    .cta-price-row .unit {
-      font-size: 0.8125rem;
-      color: var(--color-text-muted);
-    }
-    .price-disclaimer-pill {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.4rem;
-      font-size: 0.75rem;
-      color: var(--color-teal-dark);
-      background-color: var(--color-teal-surface);
-      padding: 0.4rem 0.65rem;
-      border-radius: var(--radius-sm);
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
-    }
-    .price-disclaimer-pill svg {
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
-    .sidebar-divider {
-      height: 1px;
-      background-color: var(--color-border);
-      margin-bottom: 1.25rem;
-    }
-    .cta-card-heading {
-      font-size: 1.125rem;
-      color: var(--color-ocean);
-      margin-bottom: 0.5rem;
-    }
-    .cta-card-desc {
-      font-size: 0.875rem;
-      color: var(--color-text-secondary);
-      line-height: 1.5;
-      margin-bottom: 1.5rem;
-    }
-    .sidebar-wa-btn {
-      margin-bottom: 0.85rem;
-    }
-    .redirect-hint {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
-    }
-    .sidebar-contact-info {
-      text-align: center;
-      font-size: 0.8125rem;
-      font-weight: 700;
-      color: var(--color-ocean);
-      padding-top: 1rem;
-      border-top: 1px dashed var(--color-border);
-    }
-
-    /* Not Found */
-    .not-found-state {
-      padding: var(--space-20) var(--container-padding);
-      text-align: center;
-      max-width: 560px;
-    }
-    .nf-title {
-      font-size: 1.75rem;
-      color: var(--color-ocean);
-      margin-bottom: 1rem;
-    }
-    .nf-desc {
-      font-size: 1.05rem;
-      color: var(--color-text-secondary);
-      margin-bottom: 2rem;
-    }
-  `],
 })
 export class HotelDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -507,6 +258,7 @@ export class HotelDetailComponent implements OnInit {
 
   readonly hotel = signal<Hotel | undefined>(undefined);
   readonly selectedImage = signal<string>('');
+  readonly isMobileDrawerOpen = signal<boolean>(false);
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
@@ -514,11 +266,27 @@ export class HotelDetailComponent implements OnInit {
       if (slug) {
         const item = this.catalogService.getHotelBySlug(slug);
         this.hotel.set(item);
+        this.isMobileDrawerOpen.set(false);
         if (item?.images?.length) {
           this.selectedImage.set(item.images[0]);
         }
+        if (
+          typeof window !== 'undefined' &&
+          typeof window.scrollTo === 'function' &&
+          !window.navigator?.userAgent?.includes('jsdom')
+        ) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     });
+  }
+
+  openMobileDrawer(): void {
+    this.isMobileDrawerOpen.set(true);
+  }
+
+  closeMobileDrawer(): void {
+    this.isMobileDrawerOpen.set(false);
   }
 
   onMainImageError(): void {
@@ -530,6 +298,7 @@ export class HotelDetailComponent implements OnInit {
   }
 
   onConsultWhatsApp(hotel: Hotel): void {
+    this.closeMobileDrawer();
     const url = this.waService.getHotelWhatsAppUrl(hotel, this.lang());
     this.waService.openWhatsAppUrl(url);
   }

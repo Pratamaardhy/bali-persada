@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LanguageService } from '../../../core/services/language.service';
 import { WhatsAppService } from '../../../core/services/whatsapp.service';
+import { CatalogService } from '../../../core/services/catalog.service';
 
 @Component({
   selector: 'app-footer',
@@ -40,16 +41,17 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
           </ul>
         </div>
 
-        <!-- Catalog Links -->
+        <!-- Tour Categories Links -->
         <div class="footer-col">
           <h4 class="footer-col-title">{{ t().footer.catalogTitle }}</h4>
           <ul class="footer-links">
-            <li><a routerLink="/packages" [queryParams]="{ category: 'family' }">Paket Keluarga</a></li>
-            <li><a routerLink="/packages" [queryParams]="{ category: 'group' }">Paket Rombongan</a></li>
-            <li><a routerLink="/packages" [queryParams]="{ category: 'couple' }">Paket Pasangan</a></li>
-            <li><a routerLink="/hotels" [queryParams]="{ area: 'Seminyak' }">Hotel Seminyak</a></li>
-            <li><a routerLink="/hotels" [queryParams]="{ area: 'Ubud' }">Resort Ubud</a></li>
-            <li><a routerLink="/hotels" [queryParams]="{ area: 'Nusa Dua' }">Resort Nusa Dua</a></li>
+            @for (cat of categories; track cat.id) {
+              <li>
+                <a routerLink="/packages" [queryParams]="{ category: cat.id }">
+                  {{ cat.shortTitle[lang()] }}
+                </a>
+              </li>
+            }
           </ul>
         </div>
 
@@ -57,7 +59,9 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
         <div class="footer-col">
           <h4 class="footer-col-title">{{ t().footer.contactTitle }}</h4>
           <p class="footer-contact-note">
-            Konsultasikan paket liburan dan akomodasi langsung dengan tim kami via WhatsApp.
+            {{ lang() === 'id'
+              ? 'Konsultasikan paket tour privat, perubahan rute, maupun reservasi hotel langsung dengan tim kami via WhatsApp.'
+              : 'Consult private tour itineraries, custom route requests, and hotel bookings directly with our team on WhatsApp.' }}
           </p>
           <button
             type="button"
@@ -85,26 +89,34 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
   `,
   styles: [`
     .site-footer {
+      width: 100%;
+      max-width: 100%;
       background-color: var(--color-ocean-dark);
       color: #D3DEE4;
       margin-top: auto;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .footer-container {
-      padding-top: var(--space-16);
-      padding-bottom: var(--space-12);
+      padding-top: var(--space-12);
+      padding-bottom: var(--space-10);
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+    }
+    .footer-col {
+      min-width: 0;
     }
     @media (min-width: 640px) {
       .footer-container {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2.5rem;
       }
     }
     @media (min-width: 1024px) {
       .footer-container {
-        grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+        padding-top: var(--space-16);
+        padding-bottom: var(--space-12);
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.4fr);
         gap: 3rem;
       }
     }
@@ -136,6 +148,8 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
     .footer-wa-chip {
       display: inline-flex;
       align-items: center;
+      flex-wrap: wrap;
+      max-width: 100%;
       gap: 0.5rem;
       background-color: rgba(37, 211, 102, 0.12);
       border: 1px solid rgba(37, 211, 102, 0.25);
@@ -186,28 +200,39 @@ import { WhatsAppService } from '../../../core/services/whatsapp.service';
       gap: 0.75rem;
       font-size: 0.8125rem;
       color: #7A8E9B;
+      min-width: 0;
     }
-    @media (min-width: 768px) {
+    @media (min-width: 900px) {
       .footer-bottom-inner {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        gap: 1.5rem;
       }
     }
     .footer-disclaimer {
       max-width: 680px;
       line-height: 1.5;
+      min-width: 0;
     }
     .footer-copy {
-      white-space: nowrap;
+      overflow-wrap: break-word;
+    }
+    @media (min-width: 900px) {
+      .footer-copy {
+        text-align: right;
+      }
     }
   `],
 })
 export class FooterComponent {
   private readonly langService = inject(LanguageService);
+  private readonly catalogService = inject(CatalogService);
   readonly waService = inject(WhatsAppService);
 
+  readonly lang = this.langService.currentLang;
   readonly t = this.langService.t;
+  readonly categories = this.catalogService.getCategories();
   readonly currentYear = new Date().getFullYear();
   readonly waDirectUrl = `https://wa.me/${this.waService.phoneNumber}`;
 

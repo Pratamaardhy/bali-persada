@@ -1,0 +1,237 @@
+<div class="packages-page">
+  <!-- Page Hero Header -->
+  <section class="page-header">
+    <div class="container header-inner">
+      <span class="badge badge--teal header-badge">{{ t().packagesPage.badge }}</span>
+      <h1 class="page-title">{{ t().packagesPage.title }}</h1>
+      <p class="page-subtitle">{{ t().packagesPage.subtitle }}</p>
+
+      <div class="trust-row">
+        <span class="trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ t().packagesPage.trust1 }}
+        </span>
+        <span class="trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ t().packagesPage.trust2 }}
+        </span>
+        <span class="trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ t().packagesPage.trust3 }}
+        </span>
+        <span class="trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ t().packagesPage.trust4 }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter & Catalog Body -->
+  <section class="section section--sand catalog-section">
+    <div class="container">
+      <!-- Interactive Control Panel -->
+      <div class="controls-card">
+        <!-- Category Tabs -->
+        <div class="filter-bar" role="tablist" aria-label="Filter kategori paket tour">
+          <button
+            type="button"
+            role="tab"
+            class="filter-chip"
+            [class.active]="selectedCategory() === 'all'"
+            [attr.aria-selected]="selectedCategory() === 'all'"
+            (click)="setCategory('all')"
+          >
+            <span>{{ t().packagesPage.filterAll }}</span>
+            <span class="chip-count">{{ totalCount }}</span>
+          </button>
+
+          @for (cat of categories; track cat.id) {
+            <button
+              type="button"
+              role="tab"
+              class="filter-chip"
+              [class.active]="selectedCategory() === cat.id"
+              [attr.aria-selected]="selectedCategory() === cat.id"
+              (click)="setCategory(cat.id)"
+            >
+              <span>{{ cat.shortTitle[lang()] }}</span>
+              <span class="chip-count">{{ getCategoryCount(cat.id) }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Search, Duration & Sort Row -->
+        <div class="secondary-controls">
+          <!-- Search Box -->
+          <div class="search-box">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="search"
+              class="search-input"
+              [placeholder]="t().packagesPage.searchPlaceholder"
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
+              aria-label="Cari paket tour"
+            />
+            @if (searchQuery()) {
+              <button
+                type="button"
+                class="clear-search-btn"
+                (click)="searchQuery.set('')"
+                aria-label="Clear search"
+              >
+                &times;
+              </button>
+            }
+          </div>
+
+          <!-- Duration Quick Chips -->
+          <div class="duration-group" role="group" aria-label="Filter durasi">
+            <span class="control-label">{{ t().packagesPage.durationLabel }}</span>
+            <div class="duration-pills">
+              @for (d of durationOptions; track d.value) {
+                <button
+                  type="button"
+                  class="dur-pill"
+                  [class.active]="selectedDuration() === d.value"
+                  (click)="selectedDuration.set(d.value)"
+                >
+                  {{ d.label() }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="sort-group">
+            <label for="pkg-sort" class="control-label">{{ t().packagesPage.sortLabel }}</label>
+            <select
+              id="pkg-sort"
+              class="sort-select"
+              [ngModel]="sortOption()"
+              (ngModelChange)="sortOption.set($event)"
+            >
+              <option value="recommended">{{ t().packagesPage.sortRecommended }}</option>
+              <option value="price-asc">{{ t().packagesPage.sortPriceAsc }}</option>
+              <option value="price-desc">{{ t().packagesPage.sortPriceDesc }}</option>
+              <option value="duration-asc">{{ t().packagesPage.sortDurationAsc }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Metadata & Indicative Notice -->
+      <div class="catalog-meta">
+        <div class="meta-left">
+          <span class="results-count">
+            <strong>{{ filteredPackages().length }}</strong> {{ t().packagesPage.resultsCount }}
+          </span>
+          @if (hasActiveFilters()) {
+            <button type="button" class="reset-inline-btn" (click)="resetAllFilters()">
+              {{ t().packagesPage.showAllCategories }}
+            </button>
+          }
+        </div>
+
+        <div class="indicative-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>{{ t().packagesPage.indicativeNote }}</span>
+        </div>
+      </div>
+
+      <!-- VIEW MODE A: Grouped by Category Sections -->
+      @if (isGroupedCatalogView()) {
+        <div class="category-sections-stack">
+          @for (section of groupedSections(); track section.meta.id) {
+            <section class="category-showcase-block" [id]="'cat-' + section.meta.id">
+              <div class="category-block-header">
+                <div class="category-block-titles">
+                  <span class="badge badge--teal cat-tag">{{ section.meta.tag[lang()] }}</span>
+                  <h2 class="cat-heading">{{ section.meta.title[lang()] }}</h2>
+                  <p class="cat-desc">{{ section.meta.description[lang()] }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn--outline btn--sm cat-focus-btn"
+                  (click)="setCategory(section.meta.id)"
+                >
+                  <span>{{ t().packagesPage.viewCategoryOnly }} ({{ section.items.length }})</span>
+                </button>
+              </div>
+
+              <div class="card-grid">
+                @for (pkg of section.items; track pkg.id) {
+                  <app-package-card [pkg]="pkg"></app-package-card>
+                }
+              </div>
+            </section>
+          }
+        </div>
+      } @else {
+        <!-- VIEW MODE B: Focused Filtered Grid -->
+        @if (activeCategoryMeta(); as catMeta) {
+          <div class="active-category-banner">
+            <div>
+              <span class="badge badge--teal cat-tag">{{ catMeta.tag[lang()] }}</span>
+              <h2 class="active-cat-title">{{ catMeta.title[lang()] }}</h2>
+              <p class="active-cat-desc">{{ catMeta.description[lang()] }}</p>
+            </div>
+          </div>
+        }
+
+        @if (filteredPackages().length > 0) {
+          <div class="card-grid">
+            @for (pkg of filteredPackages(); track pkg.id) {
+              <app-package-card [pkg]="pkg"></app-package-card>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            [title]="t().packagesPage.emptyTitle"
+            [description]="t().packagesPage.emptyDesc"
+            [actionLabel]="t().packagesPage.resetFilter"
+            (action)="resetAllFilters()"
+          ></app-empty-state>
+        }
+      }
+
+      <!-- Custom Tour & Group Gathering Callout Banner -->
+      <div class="custom-tour-banner">
+        <div class="custom-banner-content">
+          <span class="badge badge--teal custom-badge">{{ t().packagesPage.customBannerBadge }}</span>
+          <h2 class="custom-title">{{ t().packagesPage.customBannerTitle }}</h2>
+          <p class="custom-desc">{{ t().packagesPage.customBannerDesc }}</p>
+        </div>
+        <div class="custom-banner-action">
+          <button
+            type="button"
+            class="btn btn--whatsapp btn--lg"
+            (click)="onConsultCustomGroup()"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.288.043.088.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.2.662.589 1.221.771 1.394.858.173.086.274.072.375-.043s.433-.505.549-.679c.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/>
+            </svg>
+            <span>{{ t().packagesPage.customBannerBtn }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
